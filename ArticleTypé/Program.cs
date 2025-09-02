@@ -1,10 +1,21 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
+
+enum TypeArticle
+{
+    Alimentaire,
+    Droguerie,
+    Habillement,
+    Loisir
+}
 
 struct Article
 {
     private string nom;
     private double prix;
     private int quantite;
+    private TypeArticle type;
+
     public string Nom
     {
         get => nom;
@@ -27,9 +38,16 @@ struct Article
             quantite = value;
         }
     }
+
+    public TypeArticle Type
+    {
+        get => type;
+        set => type = value;
+    }
+
     public string Afficher()
     {
-        return $"Nom: {nom}, Prix: {prix}, Quantité: {quantite}";
+        return $"Nom: {nom}, Prix: {prix}, Quantité: {quantite}, Type: {type}";
     }
 
     public void Ajouter(int ajout = 1)
@@ -57,24 +75,27 @@ struct Article
         }
     }
 
-    public Article(string nom, double prix, int quantite)
+    public Article(string nom, double prix, int quantite, TypeArticle type)
     {
         this.nom = nom;
         this.prix = prix;
         this.quantite = quantite;
+        this.type = type;
     }
 }
-
-
-
 
 class Program
 {
     static void Main(string[] args)
     {
         Console.WriteLine("Debut du test");
-        Console.WriteLine("Partie 1 : tets auto");
-        Article[] articles = new Article[] { new Article("Test 1", 1.5, 10), new Article("Test 2", 12.12, 54), new Article("Test 3", 84.5, 0) };
+        Console.WriteLine("Partie 1 : test auto");
+        Article[] articles = new Article[]
+        {
+            new Article("test 1", 1.5, 10, TypeArticle.Alimentaire),
+            new Article("test 2", 2.2, 5, TypeArticle.Droguerie),
+            new Article("test 3", 15.0, 20, TypeArticle.Habillement)
+        };
         foreach (var article in articles)
         {
             Console.WriteLine(article.Afficher());
@@ -98,7 +119,7 @@ class Program
         string nom = Console.ReadLine();
         while (string.IsNullOrWhiteSpace(nom))
         {
-            Console.Write("Le nom ne peut pas être vide. Veuillez entrer un nom valide : ");
+            Console.Write("Le nom ne peut pas etre vide. Veuillez entrer un nom valide : ");
             nom = Console.ReadLine();
         }
         double prix = 0;
@@ -115,7 +136,7 @@ class Program
                 Console.WriteLine($"Erreur, {error.Message}. Veuillez réessayez avec un prix valide.");
             }
         }
-        int  quantite = -1;
+        int quantite = -1;
         while (true)
         {
             try
@@ -129,12 +150,39 @@ class Program
             }
             catch (Exception error)
             {
-                Console.WriteLine($"Erreur, {error.Message}. Veuillez réessayez avec une quantitée positive.");
+                Console.WriteLine($"Erreur, {error.Message}. Veuillez reessayez avec une quantitée positive.");
+            }
+        }
+        TypeArticle type;
+        while (true)
+        {
+            try
+            {
+                Console.WriteLine("Type :");
+                foreach (TypeArticle t in Enum.GetValues(typeof(TypeArticle)))
+                {
+                    Console.WriteLine($"{(int)t} : {t}");
+                }
+                int typeNbr = Convert.ToInt16(Console.ReadLine());
+                if (typeNbr >= 0 && typeNbr < Enum.GetValues(typeof(TypeArticle)).Length)
+                {
+                    type = (TypeArticle)typeNbr;
+                    break;
+                }
+                else
+                {
+                    throw new ArgumentException("Le numéro ne correspond pas à l'un des types indiqués");
+                }
+            }
+            catch (Exception error)
+            {
+                Console.WriteLine($"Erreur, {error.Message}. Veuillez réessayer avec une valeur correcte.");
             }
         }
 
-        Article nouvelArticle = new Article(nom, prix, quantite);
-        Console.WriteLine("Nouvel article créé :");
+
+        Article nouvelArticle = new Article(nom, prix, quantite, type);
+        Console.WriteLine("Nouvel article crée :");
         Console.WriteLine(nouvelArticle.Afficher());
     }
 }
